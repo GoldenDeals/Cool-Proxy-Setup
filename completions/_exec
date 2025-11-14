@@ -1,0 +1,48 @@
+#compdef exec.sh
+
+local script_dir="$(cd "$(dirname "$0")/.." && pwd)"
+local lists_dir="${script_dir}/lists"
+
+_exec() {
+    local context state line
+    local -a options proxy_files proxy_names
+
+    options=(
+        '--help[Show help message]'
+        '--dir[Directory where proxy files are located]:directory:_files -/'
+        '--state[State file path]:file:_files'
+        '--silent[Suppress proxy name output]'
+        '--rand[Select random proxy]'
+        '--cycle[Cycle through proxies sequentially]'
+        '--name[Select specific proxy by name]:proxy name:->proxy_names'
+        '--no-valid[Skip proxy file validation]'
+    )
+
+    if [[ -d "$lists_dir" ]]; then
+        proxy_files=($(find "$lists_dir" -maxdepth 1 -type f -exec basename {} \; 2>/dev/null))
+    fi
+
+    _arguments -C \
+        "1:proxy file:->proxy_files" \
+        "${options[@]}" \
+        "*::command:->command"
+
+    case $state in
+        proxy_files)
+            _describe 'proxy files' proxy_files
+            ;;
+        proxy_names)
+            local proxy_file="${words[1]}"
+            if [[ -n "$proxy_file" ]] && [[ -f "${lists_dir}/${proxy_file}" ]]; then
+                proxy_names=($(awk -F';' 'NR>1 && $1!="" {print $1}' "${lists_dir}/${proxy_file}" 2>/dev/null))
+                _describe 'proxy names' proxy_names
+            fi
+            ;;
+        command)
+            _normal
+            ;;
+    esac
+}
+
+_exec "$@"
+

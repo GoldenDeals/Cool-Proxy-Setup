@@ -1,0 +1,32 @@
+#compdef test.sh
+
+local script_dir="$(cd "$(dirname "$0")/.." && pwd)"
+local lists_dir="${script_dir}/lists"
+
+_test() {
+    local context state line
+    local -a options proxy_files
+
+    options=(
+        '--export[Export working proxies to SmartProxy format]:export file:_files'
+        '--help[Show help message]'
+    )
+
+    if [[ -d "$lists_dir" ]]; then
+        proxy_files=($(find "$lists_dir" -maxdepth 1 -type f -exec basename {} \; 2>/dev/null))
+    fi
+
+    _arguments -C \
+        "${options[@]}" \
+        "*:proxy files:->proxy_files"
+
+    case $state in
+        proxy_files)
+            _describe 'proxy files' proxy_files
+            _files
+            ;;
+    esac
+}
+
+_test "$@"
+
