@@ -112,7 +112,7 @@ for INPUT_FILE in "${UNIQUE_FILES[@]}"; do
         echo "Testing proxies from: $INPUT_FILE"
     fi
     
-    while IFS=';' read -r name login password address; do
+    while IFS=';' read -r name login password address || [[ -n "$name" ]]; do
         [[ "$name" == "name" ]] && continue
         [[ -z "$name" ]] && continue
         

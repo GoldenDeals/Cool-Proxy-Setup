@@ -215,7 +215,7 @@ validate_proxies() {
     local names=()
     local errors=()
     
-    while IFS=';' read -r name login password address; do
+    while IFS=';' read -r name login password address || [[ -n "$name" ]]; do
         ((line_num++))
         [[ "$name" == "name" ]] && continue
         [[ -z "$name" ]] && continue
@@ -265,7 +265,7 @@ read_proxies() {
     local file="$1"
     local proxies=()
     
-    while IFS=';' read -r name login password address; do
+    while IFS=';' read -r name login password address || [[ -n "$name" ]]; do
         [[ "$name" == "name" ]] && continue
         [[ -z "$name" ]] && continue
         
