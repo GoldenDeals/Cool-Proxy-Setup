@@ -1,0 +1,54 @@
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    eth0:
+      dhcp4: false
+      addresses:
+        - 10.10.10.234/24
+        - 10.10.11.233/24
+        - 10.10.12.232/24
+        - 10.10.13.231/24
+      routes:
+        - to: 0.0.0.0/0
+          via: 10.10.10.1
+
+        - to: 0.0.0.0/0
+          via: 10.10.11.1
+          table: 101
+          on-link: true
+        - to: 0.0.0.0/0
+          via: 10.10.11.1
+          table: 102
+          on-link: true
+        - to: 0.0.0.0/0
+          via: 10.10.12.1
+          table: 103
+          on-link: true
+        - to: 0.0.0.0/0
+          via: 10.10.13.1
+          table: 104
+          on-link: true
+      routing-policy:
+        - mark: 1
+          from: 0.0.0.0/0
+          table: 101
+          priority: 100
+        - mark: 2
+          from: 0.0.0.0/0
+          table: 102
+          priority: 110
+        - mark: 3
+          from: 0.0.0.0/0
+          table: 103
+          priority: 120
+        - mark: 4
+          from: 0.0.0.0/0
+          table: 104
+          priority: 130
+
+      nameservers:
+        addresses:
+          - 8.8.8.8
+          - 8.8.4.4
+          - 1.1.1.1
